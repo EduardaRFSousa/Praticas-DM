@@ -11,10 +11,6 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 
-private val BottomNavItem.route: Any
-private val BottomNavItem.title: Any
-private val BottomNavItem.icon: Any
-
 @Composable
 fun BottomNavBar(navController: NavHostController, items : List<BottomNavItem>) {
     NavigationBar(
