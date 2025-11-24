@@ -1,6 +1,0 @@
-<resources>
-    <string name="app_name">WeatherApp</string>
-    <string name="title_activity_login">LoginActivity</string>
-    <string name="title_activity_register">RegisterActivity</string>
-    <string name="title_activity_home_page">HomePage</string>
-</resources>
