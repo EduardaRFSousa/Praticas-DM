@@ -5,15 +5,13 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("org.jetbrains.kotlin.plugin.serialization") version "2.2.20"
-    id ("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
     alias(libs.plugins.google.gms.google.services)
 }
 
 android {
     namespace = "com.example.weatherapp"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.weatherapp"
@@ -27,9 +25,7 @@ android {
         val keyFile = project.rootProject.file("local.properties")
         val props = Properties()
         props.load(keyFile.inputStream())
-        buildConfigField ("String", "WEATHER_API_KEY",
-            props.getProperty("WEATHER_API_KEY"))
-
+        buildConfigField ("String", "WEATHER_API_KEY", props.getProperty("WEATHER_API_KEY"))
     }
 
     buildTypes {
@@ -58,7 +54,7 @@ dependencies {
     // Google maps
     implementation("com.google.android.gms:play-services-maps:19.2.0")
     implementation("com.google.android.gms:play-services-location:21.3.0")
-    // Google maps for compose
+    // Google maps for compos
     implementation("com.google.maps.android:maps-compose:2.8.0")
 
     implementation(libs.androidx.core.ktx)
@@ -73,9 +69,6 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:2.9.5")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.9.0")
     implementation("androidx.compose.material:material-icons-extended")
-    implementation(libs.androidx.compose.foundation.layout.android)
-    implementation(libs.androidx.compose.foundation.layout.android)
-    implementation(libs.androidx.compose.foundation.layout.android)
     implementation(libs.androidx.compose.foundation.layout.android)
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
