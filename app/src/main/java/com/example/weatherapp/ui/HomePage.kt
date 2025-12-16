@@ -12,19 +12,18 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.LocationOn
-import androidx.compose.material3.Icon
+import com.example.weatherapp.R
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.weatherapp.model.Forecast
 import com.example.weatherapp.model.MainViewModel
 import java.text.DecimalFormat
@@ -44,9 +43,12 @@ fun ForecastItem(
             .clickable( onClick = { onClick(forecast) }),
         verticalAlignment = Alignment.CenterVertically
     ){
-        Icon( imageVector = Icons.Filled.LocationOn,
-            contentDescription = "Localized description",
-            modifier = Modifier.size(48.dp) )
+        AsyncImage( // Substitui o Icon
+            model = forecast.imgUrl,
+            modifier = Modifier.size(70.dp),
+            error = painterResource(id = R.drawable.loading),
+            contentDescription = "Imagem"
+        )
         Spacer(modifier = Modifier.size(16.dp))
         Column {
             Text(modifier = Modifier, text = forecast.weather, fontSize = 24.sp)
@@ -77,9 +79,12 @@ fun HomePage(viewModel: MainViewModel) {
             }
         } else {
             Row {
-                Icon(imageVector = Icons.Filled.AccountBox,
-                    contentDescription = "Localized description",
-                    modifier = Modifier.size(150.dp))
+                AsyncImage( // Substitui o Icon
+                    model = viewModel.weather(viewModel.city!!).imgUrl,
+                    modifier = Modifier.size(140.dp),
+                    error = painterResource(id = R.drawable.loading),
+                    contentDescription = "Imagem"
+                )
                 Column {
                     Spacer(modifier = Modifier.size(12.dp))
                     Text( text = viewModel.city ?: "Selecione uma cidade...",
