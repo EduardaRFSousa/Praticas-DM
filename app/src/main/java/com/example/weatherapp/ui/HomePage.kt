@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Icon
+import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import com.example.weatherapp.R
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.weatherapp.model.Forecast
 import com.example.weatherapp.model.MainViewModel
+import com.example.weatherapp.ui.nav.BottomNavItem.HomeButton.icon
 import java.text.DecimalFormat
 
 @Composable
@@ -79,12 +82,12 @@ fun HomePage(viewModel: MainViewModel) {
             }
         } else {
             Row {
-                AsyncImage( // Substitui o Icon
-                    model = viewModel.weather(viewModel.city!!).imgUrl,
-                    modifier = Modifier.size(140.dp),
-                    error = painterResource(id = R.drawable.loading),
-                    contentDescription = "Imagem"
+                Icon( imageVector = icon, contentDescription = "Monitorada?",
+                    modifier = Modifier.size(32.dp).clickable {
+                        viewModel.update(city = city!!.copy(isMonitored = !city.isMonitored))
+                    }
                 )
+
                 Column {
                     Spacer(modifier = Modifier.size(12.dp))
                     Text( text = viewModel.city ?: "Selecione uma cidade...",

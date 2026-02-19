@@ -1,5 +1,6 @@
 package com.example.weatherapp.model
 
+import androidx.browser.browseractions.BrowserServiceFileProvider.loadBitmap
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -33,6 +34,9 @@ class MainViewModel (private val db: FBDatabase, private val service : WeatherSe
     var page: Route
         get() = _page.value
         set(tmp) { _page.value = tmp }
+
+    val cityMap : Map<String, City>
+    get() = _cities.toMap()
 
     init {
         db.setListener(this)
@@ -106,6 +110,10 @@ class MainViewModel (private val db: FBDatabase, private val service : WeatherSe
                 _weather[name] = weather.copy(bitmap = bitmap)
             }
         }
+    }
+
+    fun update(city: City) {
+        FBDatabase.update()
     }
 
 }
