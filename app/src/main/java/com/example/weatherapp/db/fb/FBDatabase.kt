@@ -77,7 +77,7 @@ class FBDatabase {
         if (auth.currentUser == null) throw RuntimeException("Not logged in!")
         val uid = auth.currentUser!!.uid
         val changes = mapOf("lat" to city.lat,"lng" to city.lng,
-            "monitored" to city.monitored )
+            "monitored" to city.isMonitored )
         db.collection("users").document(uid)
             .collection("cities").document(city.name!!).update(changes)
     }
