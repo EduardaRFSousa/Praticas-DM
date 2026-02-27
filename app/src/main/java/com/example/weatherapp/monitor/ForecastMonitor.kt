@@ -7,7 +7,7 @@ import androidx.work.Data
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
-import com.example.weatherapp.db.fb.FBCity
+import com.example.weatherapp.model.City
 import java.util.concurrent.TimeUnit
 
 class ForecastMonitor (context: Context) {
@@ -15,7 +15,7 @@ class ForecastMonitor (context: Context) {
     @SuppressLint("ServiceCast")
     private val nm = context.getSystemService(Context.NOTIFICATION_SERVICE) as
             NotificationManager
-    fun updateCity(city: FBCity) {
+    fun updateCity(city: City) {
         cancelCity(city)
         if (!city.isMonitored) return;
         val inputData = Data.Builder().putString("city", city.name).build()
@@ -27,7 +27,7 @@ class ForecastMonitor (context: Context) {
         wm.enqueueUniquePeriodicWork(city.name!!,
             ExistingPeriodicWorkPolicy.CANCEL_AND_REENQUEUE, request )
     }
-    fun cancelCity(city: FBCity) {
+    fun cancelCity(city: City) {
         wm.cancelUniqueWork(city.name!!)
         nm.cancel(city.name.hashCode())
     }

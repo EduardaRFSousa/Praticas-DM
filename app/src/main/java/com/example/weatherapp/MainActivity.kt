@@ -34,9 +34,11 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.NavDestination.Companion.hasRoute
 import com.example.weatherapp.api.WeatherService
 import com.example.weatherapp.db.fb.FBDatabase
+import com.example.weatherapp.db.local.LocalDatabase
 import com.example.weatherapp.model.MainViewModel
 import com.example.weatherapp.model.MainViewModelFactory
 import com.example.weatherapp.monitor.ForecastMonitor
+import com.example.weatherapp.repo.Repository
 import com.example.weatherapp.ui.CityDialog
 import com.example.weatherapp.ui.nav.BottomNavBar
 import com.example.weatherapp.ui.nav.BottomNavItem
@@ -53,17 +55,21 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            val userUid = Firebase.auth.currentUser?.uid
             var showDialog by remember { mutableStateOf(false) }
             val navController = rememberNavController()
             val currentRoute = navController.currentBackStackEntryAsState()
             val showButton = currentRoute.value?.destination?.hasRoute(Route.List::class) == true
             val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission(), onResult = {} )
             val fbDB = remember { FBDatabase() }
+            val localDB = remember { LocalDatabase(this, userUid.toString()) }
+            val repo = remember { Repository(fbDB, localDB) }
             val weatherService = remember { WeatherService(this) }
             val forecastMonitor = remember { ForecastMonitor (this) }
             val viewModel : MainViewModel = viewModel(
-                factory = MainViewModelFactory(fbDB, weatherService, forecastMonitor)
+                factory = MainViewModelFactory(repo, weatherService, forecastMonitor)
             )
+
             DisposableEffect(Unit) {
                 val listener = Consumer<Intent> { intent ->
                     viewModel.city = intent.getStringExtra("city")
