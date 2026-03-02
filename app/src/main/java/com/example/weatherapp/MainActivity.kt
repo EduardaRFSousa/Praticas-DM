@@ -28,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.core.util.Consumer
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -37,6 +38,7 @@ import com.example.weatherapp.db.fb.FBDatabase
 import com.example.weatherapp.db.local.LocalDatabase
 import com.example.weatherapp.model.MainViewModel
 import com.example.weatherapp.model.MainViewModelFactory
+import com.example.weatherapp.model.User
 import com.example.weatherapp.monitor.ForecastMonitor
 import com.example.weatherapp.repo.Repository
 import com.example.weatherapp.ui.CityDialog
@@ -47,6 +49,7 @@ import com.example.weatherapp.ui.nav.Route
 import com.example.weatherapp.ui.theme.WeatherAppTheme
 import com.google.firebase.Firebase
 import com.google.firebase.auth.auth
+import kotlinx.coroutines.flow.StateFlow
 
 
 class MainActivity : ComponentActivity() {
@@ -69,6 +72,7 @@ class MainActivity : ComponentActivity() {
             val viewModel : MainViewModel = viewModel(
                 factory = MainViewModelFactory(repo, weatherService, forecastMonitor)
             )
+            val user = viewModel.user.collectAsStateWithLifecycle(null).value
 
             DisposableEffect(Unit) {
                 val listener = Consumer<Intent> { intent ->
@@ -92,7 +96,7 @@ class MainActivity : ComponentActivity() {
                     topBar = {
                         TopAppBar(
                             title = {
-                                val name = viewModel.user?.name?:"[carregando...]"
+                                val name = user?.name ?:"[carregando...]"
                                 Text("Bem-vindo/a! $name")
                             },
                             actions = {

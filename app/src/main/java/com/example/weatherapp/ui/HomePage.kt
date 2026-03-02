@@ -13,11 +13,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,6 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.example.weatherapp.model.Forecast
 import com.example.weatherapp.model.MainViewModel
@@ -81,38 +84,56 @@ fun HomePage(viewModel: MainViewModel) {
                 )
             }
         } else {
-            val cityName = viewModel.city ?: ""
-            val cityObj = viewModel.cityMap[cityName]
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                val icon = if (cityObj?.isMonitored == true)
-                    androidx.compose.material.icons.Icons.Filled.Notifications
-                else
-                    androidx.compose.material.icons.Icons.Outlined.Notifications
-                Icon(
-                    imageVector = icon,
-                    contentDescription = "Monitorada?",
-                    modifier = Modifier.size(32.dp).clickable {
-                        cityObj?.let {
-                            viewModel.update(it.copy(isMonitored = !it.isMonitored))
-                        }
-                    }
-                )
-
+            val cities = viewModel.cities.collectAsStateWithLifecycle(emptyMap()).value
+            val city = cities[viewModel.city!!]
+            val weather = viewModel.weather.collectAsStateWithLifecycle(emptyMap())
+                .value[viewModel.city!!]
+            val icon = if (city?.isMonitored == true) Icons.Filled.Notifications else
+                Icons.Outlined.Notifications
+            val forecasts = viewModel.forecast.collectAsStateWithLifecycle(emptyMap())
+                .value[viewModel.city!!]
+            LaunchedEffect(viewModel.city!!) {
+                viewModel.loadForecast(viewModel.city!!)
+            }
+            Row {
                 Column {
                     Spacer(modifier = Modifier.size(12.dp))
-                    Text( text = cityName, fontSize = 28.sp)
-                    viewModel.city?.let { name ->
-                        val weather = viewModel.weather(name)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = viewModel.city ?: "Selecione uma cidade...",
+                            fontSize = 28.sp
+                        )
+                        Spacer(modifier = Modifier.size(8.dp))
+                        if (city != null) {
+                            val icon =
+                                if (city.isMonitored) Icons.Filled.Notifications else Icons.Outlined.Notifications
+                            Icon(
+                                imageVector = icon, contentDescription = "Monitorada?",
+                                modifier = Modifier
+                                    .size(32.dp)
+                                    .clickable {
+                                        viewModel.update(city = city.copy(isMonitored = !city.isMonitored))
+                                    }
+                            )
+                        }
+                    }
+
+                    viewModel.city?.let {
+                        val weather = weather
                         Spacer(modifier = Modifier.size(12.dp))
-                        Text( text = weather?.desc ?: "...",
-                            fontSize = 22.sp)
+                        Text(
+                            text = weather?.desc ?: "...",
+                            fontSize = 22.sp
+                        )
                         Spacer(modifier = Modifier.size(12.dp))
-                        Text( text = "Temp: " + weather?.temp + "℃",
-                            fontSize = 22.sp)
+                        Text(
+                            text = "Temp: " + weather?.temp + "℃",
+                            fontSize = 22.sp
+                        )
                     }
                 }
             }
-            viewModel.forecast(viewModel.city!!)?.let { forecasts ->
+            forecasts?.let { forecasts ->
                 LazyColumn {
                     items(items = forecasts) { forecast ->
                         ForecastItem(forecast, onClick = { })

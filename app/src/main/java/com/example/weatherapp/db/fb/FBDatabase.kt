@@ -5,6 +5,10 @@ import com.google.firebase.auth.auth
 import com.google.firebase.firestore.DocumentChange
 import com.google.firebase.firestore.ListenerRegistration
 import com.google.firebase.firestore.firestore
+import com.google.firebase.firestore.snapshots
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.map
 
 class FBDatabase {
     interface Listener {
@@ -18,6 +22,25 @@ class FBDatabase {
     private val db = Firebase.firestore
     private var citiesListReg: ListenerRegistration? = null
     private var listener : Listener? = null
+
+    val user: Flow<FBUser>
+        get() {
+            if (auth.currentUser == null) return emptyFlow()
+            return db.collection("users")
+                .document(auth.currentUser!!.uid)
+                .snapshots().map { it.toObject(FBUser::class.java)!! }
+        }
+    val cities: Flow<List<FBCity>>
+        get() {
+            if (auth.currentUser == null) return emptyFlow()
+            return db.collection("users")
+                .document(auth.currentUser!!.uid)
+                .collection("cities")
+                .snapshots().map {
+                        snapshot -> snapshot.toObjects(FBCity::class.java)
+                }
+        }
+
 
     init {
         auth.addAuthStateListener { auth ->
