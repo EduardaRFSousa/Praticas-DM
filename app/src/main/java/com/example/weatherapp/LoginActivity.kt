@@ -14,8 +14,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material.icons.filled.Cloud
 import androidx.compose.material3.Button
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -59,63 +61,86 @@ fun LoginPage(modifier: Modifier = Modifier) {
     val activity: Activity = context as Activity
 
     Column(
-        modifier = modifier.padding(16.dp).fillMaxSize(),
-        verticalArrangement = Arrangement.Center, // Passo 6
-        horizontalAlignment = CenterHorizontally // Passo 6
+        modifier = modifier
+            .padding(16.dp)
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = CenterHorizontally
     ) {
-        Text(
-            text = "Faça seu LogIn:",
-            fontSize = 24.sp
+        // --- LOGO E NOME DO APP ---
+        androidx.compose.material3.Icon(
+            imageVector = androidx.compose.material.icons.Icons.Default.Cloud,
+            contentDescription = null,
+            modifier = Modifier.size(80.dp),
+            tint = androidx.compose.material3.MaterialTheme.colorScheme.primary
         )
+        Text(
+            text = "WeatherApp",
+            fontSize = 32.sp,
+            fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
+            color = androidx.compose.material3.MaterialTheme.colorScheme.primary
+        )
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        Text(
+            text = "Bem-vindo! Faça seu Login",
+            fontSize = 20.sp,
+            color = androidx.compose.material3.MaterialTheme.colorScheme.secondary
+        )
+
         Spacer(modifier = Modifier.size(24.dp))
 
         OutlinedTextField(
             value = email,
-            label = { Text(text = "Digite seu e-mail") },
+            label = { Text(text = "E-mail") },
             onValueChange = { email = it },
-            modifier = Modifier.fillMaxWidth(fraction = 0.9f)
+            modifier = Modifier.fillMaxWidth(fraction = 0.9f),
+            singleLine = true
         )
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedTextField(
             value = password,
-            label = { Text(text = "Digite sua senha") },
+            label = { Text(text = "Senha") },
             onValueChange = { password = it },
             visualTransformation = PasswordVisualTransformation(),
-            modifier = Modifier.fillMaxWidth(fraction = 0.9f)
+            modifier = Modifier.fillMaxWidth(fraction = 0.9f),
+            singleLine = true
         )
 
-        Spacer(modifier = Modifier.size(24.dp))
-        Row(modifier = modifier) {
-            Button( onClick = {
-                Firebase.auth.signInWithEmailAndPassword(email, password)
-                    .addOnCompleteListener(activity) { task ->
-                        if (task.isSuccessful) {
+        Spacer(modifier = Modifier.size(32.dp))
 
-                            Toast.makeText(activity, "Login OK!", Toast.LENGTH_LONG).show()
-                        } else {
-                            Toast.makeText(activity, "Login FALHOU!", Toast.LENGTH_LONG).show()
-                        }
-                    }
-            }, enabled = email.isNotEmpty() && password.isNotEmpty()) {
-                Text("Login")
-            }
-
+        // --- BOTÕES ---
+        Column(
+            horizontalAlignment = CenterHorizontally,
+            modifier = Modifier.fillMaxWidth()
+        ) {
             Button(
                 onClick = {
-                    activity.startActivity(
-                        Intent(activity, RegisterActivity::class.java)
-                    )
-                }
+                    Firebase.auth.signInWithEmailAndPassword(email, password)
+                        .addOnCompleteListener(activity) { task ->
+                            if (task.isSuccessful) {
+                                Toast.makeText(activity, "Login OK!", Toast.LENGTH_LONG).show()
+                            } else {
+                                Toast.makeText(activity, "Falha na autenticação.", Toast.LENGTH_LONG).show()
+                            }
+                        }
+                },
+                enabled = email.isNotEmpty() && password.isNotEmpty(),
+                modifier = Modifier.fillMaxWidth(0.7f)
             ) {
-                Text("Cadastro")
+                Text("Entrar")
             }
 
-            Button(
-                onClick = { email = ""; password = "" }
+            androidx.compose.material3.TextButton(
+                onClick = {
+                    activity.startActivity(Intent(activity, RegisterActivity::class.java))
+                }
             ) {
-                Text("Limpar")
+                Text("Não tem uma conta? Cadastre-se")
             }
         }
     }
 }
-

@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
@@ -43,39 +44,51 @@ fun CityItem(
     modifier: Modifier = Modifier
 ) {
     val desc = if (weather == Weather.LOADING) "Carregando clima..." else weather.desc
+    val monitorIcon = if (city.isMonitored)
+        androidx.compose.material.icons.Icons.Filled.Notifications
+    else
+        androidx.compose.material.icons.Icons.Outlined.Notifications
+
     Row(
-        modifier = modifier.fillMaxWidth().padding(8.dp).clickable { onClick() },
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(8.dp)
+            .clickable { onClick() },
         verticalAlignment = Alignment.CenterVertically
     ) {
-        AsyncImage( //Substitui o Icon (...)
+        AsyncImage(
             model = weather.imgUrl,
             modifier = Modifier.size(75.dp),
             error = painterResource(id = R.drawable.loading),
-            contentDescription = "Imagem"
+            contentDescription = "Imagem do clima"
         )
+
         Spacer(modifier = Modifier.size(12.dp))
-        Column(modifier = modifier.weight(1f)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    modifier = Modifier,
-                    text = city.name,
-                    fontSize = 24.sp
-                )
-                if (city.isMonitored) {
-                    Spacer(modifier = Modifier.size(8.dp))
-                    Icon(
-                        imageVector = Icons.Filled.Notifications,
-                        contentDescription = "Monitorada",
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-            }
+
+        // Coluna central: Nome em cima, Descrição embaixo
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = city.name,
+                fontSize = 24.sp,
+                lineHeight = 28.sp
+            )
+            Text(
+                text = desc,
+                fontSize = 16.sp,
+                color = androidx.compose.ui.graphics.Color.Gray
+            )
         }
-        Text(modifier = Modifier,
-            text = desc,
-            fontSize = 16.sp)
+
+        // Ícone de monitoramento (apenas visual na lista, sem clique conforme Passo 6)
+        Icon(
+            imageVector = monitorIcon,
+            contentDescription = "Status de Monitoramento",
+            modifier = Modifier.size(28.dp).padding(horizontal = 4.dp),
+            tint = if (city.isMonitored) androidx.compose.ui.graphics.Color.Unspecified else androidx.compose.ui.graphics.Color.LightGray
+        )
+
         IconButton(onClick = onClose) {
-            Icon(Icons.Filled.Close, contentDescription = "Close")
+            Icon(Icons.Filled.Close, contentDescription = "Remover cidade")
         }
     }
 }
