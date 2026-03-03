@@ -88,8 +88,6 @@ fun HomePage(viewModel: MainViewModel) {
             val city = cities[viewModel.city!!]
             val weather = viewModel.weather.collectAsStateWithLifecycle(emptyMap())
                 .value[viewModel.city!!]
-            val icon = if (city?.isMonitored == true) Icons.Filled.Notifications else
-                Icons.Outlined.Notifications
             val forecasts = viewModel.forecast.collectAsStateWithLifecycle(emptyMap())
                 .value[viewModel.city!!]
             LaunchedEffect(viewModel.city!!) {

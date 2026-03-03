@@ -63,7 +63,7 @@ class MainActivity : ComponentActivity() {
             val navController = rememberNavController()
             val currentRoute = navController.currentBackStackEntryAsState()
             val showButton = currentRoute.value?.destination?.hasRoute(Route.List::class) == true
-            val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestPermission(), onResult = {} )
+            val launcher = rememberLauncherForActivityResult(contract = ActivityResultContracts.RequestMultiplePermissions(), onResult = {} )
             val fbDB = remember { FBDatabase() }
             val localDB = remember { LocalDatabase(this, userUid.toString()) }
             val repo = remember { Repository(fbDB, localDB) }
@@ -132,7 +132,10 @@ class MainActivity : ComponentActivity() {
                     }
                 ) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
-                        launcher.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
+                        launcher.launch(arrayOf(
+                            android.Manifest.permission.ACCESS_FINE_LOCATION,
+                            android.Manifest.permission.POST_NOTIFICATIONS
+                        ))
                         MainNavHost(navController = navController, viewModel = viewModel)
                     }
                     LaunchedEffect(viewModel.page) {
